@@ -214,15 +214,31 @@ h1,h2,h3{font-weight:600;letter-spacing:-.025em}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{background:linear-gradient(180deg,#121218,#1A1730)}}
 :root[data-theme="dark"] .hero{background:linear-gradient(180deg,#121218,#1A1730)}
 
+.sendhint{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:var(--lilac);color:var(--on-lilac);font-size:14px;line-height:1.5}
+.layout:not([data-step="5"]) .sendhint{display:none}
+#print-doc{display:none}
 @media print{
-  body{background:#fff}
-  .herowrap,.prog,.nav,.maincol,footer,.actions,.status,#c-copyout{display:none!important}
-  .layout{display:block!important}
-  .layout .aside{display:block!important;position:static!important;box-shadow:none}
-  .panel{box-shadow:none;border:1px solid #ccc}
-  #print-head{display:block!important}
+  @page{size:A4;margin:14mm}
+  html,body{background:#fff!important}
+  body>*:not(#print-doc){display:none!important}
+  #print-doc{display:block;color:#16131F;font-family:var(--f-body);font-size:10.5pt;line-height:1.45;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #print-doc .pd-head{background:#16131F;color:#F5F5F7;border-radius:10px;padding:18px 22px;margin-bottom:14px}
+  #print-doc .pd-over{font-family:var(--f-mono);font-size:8pt;letter-spacing:.12em;text-transform:uppercase;color:#C7C7CF}
+  #print-doc h1{font-size:19pt;margin:6px 0 2px;font-weight:600;letter-spacing:-.02em;color:#F5F5F7}
+  #print-doc .pd-sub{color:#C7C7CF;font-size:9.5pt}
+  #print-doc .pd-gain{background:#E4DDFF;color:#3B2A99;border-radius:10px;padding:12px 16px;margin:0 0 14px;font-size:11pt}
+  #print-doc .pd-gain b{font-size:17pt;letter-spacing:-.02em;color:#16131F}
+  #print-doc h2{font-family:var(--f-mono);font-size:8.5pt;letter-spacing:.12em;text-transform:uppercase;color:#5A3BE0;margin:14px 0 6px;padding-bottom:3px;border-bottom:1px solid #CFC6F2;font-weight:600;break-after:avoid}
+  #print-doc table{width:100%;border-collapse:collapse;break-inside:auto}
+  #print-doc tr{break-inside:avoid}
+  #print-doc th{background:#E4DDFF;color:#3B2A99;text-align:left;font-size:8.5pt;padding:5px 8px}
+  #print-doc td{padding:5px 8px;border-bottom:1px solid #DCD8E8;vertical-align:top}
+  #print-doc td:first-child{font-weight:600;width:34%}
+  #print-doc .pd-tags span{display:inline-block;background:#E4DDFF;color:#3B2A99;border-radius:99px;padding:2px 10px;margin:0 4px 4px 0;font-size:9.5pt}
+  #print-doc .pd-note{white-space:pre-wrap;background:#F6F5FA;border-radius:8px;padding:8px 12px}
+  #print-doc .pd-send{background:#E4DDFF;color:#3B2A99;border-radius:10px;padding:10px 14px;margin:0 0 14px;font-weight:600}
+  #print-doc .pd-foot{margin-top:16px;padding-top:6px;border-top:1px solid #CFC6F2;color:#5B5670;font-size:8.5pt;font-family:var(--f-mono)}
 }
-#print-head{display:none;font-family:var(--f-body);margin:0 0 16px}
 </style>
 
 </head>
@@ -335,11 +351,11 @@ h1,h2,h3{font-weight:600;letter-spacing:-.025em}
       <div class="panel">
         <h3>Ihre Auswertung</h3>
         <p class="muted">Grobe Schätzung. Die Planwerte prüfen wir im Gespräch mit Ihnen.</p>
-        <div id="print-head"></div>
         <div id="result"></div>
+        <p class="sendhint" id="sendhint"></p>
         <div class="actions">
-          <button class="btn primary" type="button" id="c-send">Per E-Mail senden</button>
-          <button class="btn" type="button" id="c-pdf">Als PDF speichern</button>
+          <button class="btn primary" type="button" id="c-pdf">Als PDF speichern</button>
+          <button class="btn" type="button" id="c-send">Per E-Mail senden</button>
           <button class="btn" type="button" id="c-copy">Zusammenfassung kopieren</button>
           <button class="btn" type="button" id="c-edit">Angaben ändern</button>
         </div>
@@ -644,10 +660,30 @@ h1,h2,h3{font-weight:600;letter-spacing:-.025em}
   $('#c-edit').addEventListener('click',function(){go(4,true)});
   $('#start').addEventListener('click',function(){go(0,true)});
 
+  function pdTable(rows,h1,h2){return '<table><tr><th>'+esc(h1)+'</th><th>'+esc(h2)+'</th></tr>'+rows.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1]||'-')+'</td></tr>'}).join('')+'</table>'}
+  function buildPrint(d){
+    var A=d.archivierung, who=[d.name,d.kontakt].filter(Boolean).join(' · ');
+    var h='<div class="pd-head"><div class="pd-over">Digital-Check · Selzer Pflasterbau</div><h1>Ihre Angaben und Auswertung</h1><div class="pd-sub">'+(who?esc(who)+' · ':'')+new Date().toLocaleDateString('de-DE')+'</div></div>';
+    h+='<div class="pd-send">Bitte diese Datei als PDF speichern und per E-Mail an '+esc(TO)+' schicken.</div>';
+    h+='<div class="pd-gain">Möglicher Zeitgewinn: <b>ca. '+esc(fmt1(d.geschaetzterGewinnStd))+' Std. pro Woche</b></div>';
+    h+='<h2>Zeitfresser</h2><table><tr><th>Bereich</th><th>Aufwand pro Woche</th><th>Was dabei passiert</th></tr>'+d.bereiche.map(function(b){return '<tr><td>'+esc(b.bereich)+'</td><td>'+esc(b.aufwand)+'</td><td>'+esc((b.teilaufgaben||[]).join('; ')||'-')+'</td></tr>'}).join('')+'</table>';
+    h+='<h2>Größe des Betriebs</h2>'+pdTable(Object.keys(d.details).map(function(k){return [k,d.details[k]]}),'Frage','Antwort');
+    h+='<h2>Systeme</h2><div class="pd-tags">'+(d.systeme.length?d.systeme.map(function(x){return '<span>'+esc(x)+'</span>'}).join(''):'-')+'</div>';
+    h+='<h2>Archivierung</h2>'+pdTable([['Zu archivieren',A.was.join(', ')],['Ziele',A.ziele.join(', ')],['Heute abgelegt',A.ablageHeute],['Aufbewahrung',A.aufbewahrung],['Gesucht wird',A.suchhaeufigkeit],['Zugriff',A.zugriff],['Wünsche',A.wuensche]],'Punkt','Antwort');
+    h+='<h2>Freigabe</h2><p>'+esc(d.freigabe)+'</p>';
+    if(d.anmerkung) h+='<h2>Was nervt am meisten</h2><div class="pd-note">'+esc(d.anmerkung)+'</div>';
+    if(d.beispielwerte) h+='<p><i>Hinweis: Angaben noch nicht angepasst (Beispielwerte).</i></p>';
+    h+='<div class="pd-foot">Selzer Pflasterbau GmbH · Digital-Check · Grobe Schätzung, Planwerte klären wir im Gespräch.</div>';
+    return h;
+  }
+  $('#sendhint').innerHTML='<b>So geht es weiter:</b> 1. „Als PDF speichern“ antippen und die Datei sichern. 2. Das PDF per E-Mail an <b>'+esc(TO)+'</b> schicken.';
   $('#c-pdf').addEventListener('click',function(){
     var d=collectCheck();
     if(!d.bereiche.length){say($('#c-status'),'Bitte zuerst mindestens einen Bereich auswählen.','err');return}
-    $('#print-head').innerHTML='<h2 style="margin:0 0 4px">Digital-Check Selzer Pflasterbau</h2><p style="margin:0">'+esc(d.name||'')+' '+esc(d.kontakt||'')+' · '+new Date().toLocaleDateString('de-DE')+'</p><p style="margin:8px 0 0;white-space:pre-wrap">'+esc(summaryText(d))+'</p>';
+    var el=document.getElementById('print-doc');
+    if(!el){el=document.createElement('div');el.id='print-doc';document.body.appendChild(el)}
+    el.innerHTML=buildPrint(d);
+    say($('#c-status'),'Im nächsten Fenster „Als PDF speichern“ bzw. „PDF sichern“ wählen. Das PDF können Sie dann an Ihre E-Mail anhängen.','ok');
     window.print();
   });
   go(0,false);
