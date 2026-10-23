@@ -1,0 +1,657 @@
+<title>Selzer Digital-Check</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;600;700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: Clarity Workspace (Lilac light / Graphite). Graphite-Hero, darunter ein Schritt-für-Schritt-Check mit Fortschrittsleiste und Auswertung am Ende. */
+:root{
+  --bg:#FFFFFF; --surface:#FFFFFF; --mist:#EEEBF7; --line:#DCD8E8; --line-strong:#8A849F;
+  --ink:#16131F; --muted:#5B5670; --silver:#C7C7CF;
+  --accent:#6C4CF5; --accent-ink:#FFFFFF; --iris-ink:#5A3BE0;
+  --lilac:#E4DDFF; --lilac-deep:#CFC6F2; --on-lilac:#3B2A99;
+  --graphite:#16131F; --on-graphite:#F5F5F7;
+  --sand:#CFC6F2; --ok:#1B6E4C; --danger:#B42318;
+  --f-display:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-body:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D0D10; --surface:#17171C; --mist:#1F1F26; --line:#2A2A31; --line-strong:#6A6A77;
+    --ink:#F5F5F7; --muted:#A6A6B2; --silver:#C7C7CF;
+    --accent:#7C6CFF; --accent-ink:#0D0D10; --iris-ink:#A99FFF;
+    --lilac:#2A2446; --lilac-deep:#3A3260; --on-lilac:#D9D2FF;
+    --graphite:#1F1F26; --on-graphite:#F5F5F7;
+    --sand:#3A3260; --ok:#5FD4A0; --danger:#FF8577;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D0D10; --surface:#17171C; --mist:#1F1F26; --line:#2A2A31; --line-strong:#6A6A77;
+  --ink:#F5F5F7; --muted:#A6A6B2; --silver:#C7C7CF;
+  --accent:#7C6CFF; --accent-ink:#0D0D10; --iris-ink:#A99FFF;
+  --lilac:#2A2446; --lilac-deep:#3A3260; --on-lilac:#D9D2FF;
+  --graphite:#1F1F26; --on-graphite:#F5F5F7;
+  --sand:#3A3260; --ok:#5FD4A0; --danger:#FF8577;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance;line-height:1.1}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Kopf */
+.top{padding-top:28px}
+.brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.top h1{font-size:clamp(44px,9vw,76px);margin-top:10px;letter-spacing:-.01em}
+.lead{max-width:56ch;margin-top:14px;color:var(--muted);font-size:18px}
+.tabs{display:flex;gap:8px;margin-top:26px;flex-wrap:wrap}
+.tab{flex:1 1 180px;max-width:260px;padding:12px 18px;background:transparent;border:1.5px solid var(--ink);border-radius:3px;cursor:pointer;font-weight:600;text-align:left}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.bricks{display:block;width:100%;height:36px;margin-top:26px}
+
+/* Gemeinsames */
+main{padding-block:36px 56px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:32px;align-items:start}
+@media (min-width:960px){.layout{grid-template-columns:minmax(0,1fr) 340px}.aside{position:sticky;top:16px}}
+.step{margin-bottom:40px}
+.step-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.step h2{font-size:30px}
+.step .no{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.hint{color:var(--muted);font-size:15px;margin-bottom:16px;max-width:62ch}
+.badge{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--sand);border-radius:3px;color:var(--muted)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 16px}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.f>span,.lbl{font-size:13px;font-weight:600;color:var(--muted)}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:10px 12px;min-height:44px}
+textarea{min-height:96px;resize:vertical}
+input[type=checkbox]{accent-color:var(--accent);width:20px;height:20px;flex:none;margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 20px;border-radius:3px;border:1.5px solid var(--ink);background:transparent;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{min-height:36px;padding:6px 12px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:default}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.status{margin-top:12px;font-size:15px;min-height:1.5em}
+.status.err{color:var(--danger)}
+.status.ok{color:var(--ok)}
+
+/* Bereiche */
+.areas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.area{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.area.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.area-head{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.area-head strong{display:block;font-weight:600}
+.area-head small{display:block;color:var(--muted);font-size:14px;line-height:1.4}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);background:var(--surface);border-radius:3px;cursor:pointer;min-height:40px}
+.chip:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+
+.own{margin-top:24px}
+.own h3{font-size:22px;margin-bottom:4px}
+.addrow{display:flex;gap:10px;align-items:flex-end;margin-top:12px;flex-wrap:wrap}
+.addrow .f{flex:1 1 240px}
+
+.areas{align-items:start}
+.subs{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.subs .cap{font-size:13px;font-weight:600;color:var(--muted)}
+.sub{display:flex;gap:10px;align-items:flex-start;font-size:15px;cursor:pointer;line-height:1.4;padding:2px 0}
+.sub input{margin-top:1px}
+.subadd{display:flex;gap:8px;margin-top:4px}
+.subadd input{min-height:38px;padding:6px 10px;font-size:15px;min-width:0}
+
+/* Auswertung */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:20px}
+.panel h3{font-size:24px;margin-bottom:4px}
+.big{font-family:var(--f-display);font-weight:700;font-size:56px;line-height:1;margin-top:14px;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;font-weight:600;color:var(--muted);margin-left:4px}
+.muted{color:var(--muted);font-size:14px}
+.rank{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.rank li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;font-size:15px}
+.rank .v{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar{grid-column:1/-1;height:8px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.start{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.empty{color:var(--muted);margin-top:14px}
+.copybox{width:100%;margin-top:12px;font-family:var(--f-mono);font-size:13px;min-height:140px}
+
+/* Regiebericht */
+.table-rows{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;align-items:end}
+.row .wide{grid-column:span 2}
+@media (max-width:520px){.row .wide{grid-column:1/-1}}
+.out{font-family:var(--f-mono);font-variant-numeric:tabular-nums;min-height:44px;display:flex;align-items:center;font-weight:500}
+.rm{align-self:end}
+.sum{display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums}
+.sum b{font-weight:500;color:var(--accent)}
+.sigwrap{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#FBFAF7}
+#sig{display:block;width:100%;height:160px;touch-action:none;cursor:crosshair}
+.banner{padding:10px 14px;border:1px dashed var(--sand);border-radius:3px;color:var(--muted);font-size:15px;margin-bottom:20px}
+.saved{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.saved li{display:flex;gap:10px;justify-content:space-between;align-items:center;font-size:14px;padding:8px 0;border-bottom:1px solid var(--line)}
+.saved li span{min-width:0;overflow-wrap:anywhere}
+.saved .d{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+footer{padding-block:0 40px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:no-preference){.area,.chip{transition:border-color .15s,background-color .15s}.bar i{transition:width .3s}}
+
+/* ===== Clarity Workspace ===== */
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:-.02em}
+.herowrap{padding-top:24px}
+.hero{background:var(--graphite);color:var(--on-graphite);border-radius:24px;padding:clamp(28px,5vw,56px);box-shadow:0 5px 0 var(--lilac-deep)}
+.over{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--silver)}
+.dot{width:10px;height:10px;border-radius:999px;background:var(--accent);display:inline-block;flex:none}
+.hero h1{font-size:clamp(28px,5.6vw,48px);line-height:1.12;letter-spacing:-.03em;margin-top:18px;max-width:18ch;text-wrap:balance}
+.hero .lead{color:var(--silver);font-size:18px;line-height:1.55;max-width:52ch;margin-top:18px}
+.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:28px}
+.hero .meta{font-family:var(--f-mono);font-size:12px;color:var(--silver)}
+.facts{list-style:none;margin:28px 0 0;padding:20px 0 0;border-top:1px solid #FFFFFF22;display:flex;gap:10px 28px;flex-wrap:wrap;font-size:14px;color:var(--on-graphite)}
+.facts li::before{content:"";display:inline-block;width:6px;height:6px;border-radius:999px;background:var(--accent);margin-right:10px;vertical-align:middle}
+.btn{border-radius:14px;border-color:var(--line-strong);background:var(--surface);font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{border-radius:8px}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{border-radius:8px;border-color:var(--line-strong)}
+.area,.panel,.row{border-radius:14px}
+.area.on{border-color:var(--accent);background:var(--lilac);box-shadow:0 4px 0 var(--lilac-deep)}
+.area.on .area-head small{color:var(--on-lilac)}
+.chip{border-radius:999px;padding:8px 16px;border-color:var(--line-strong)}
+.chip:has(input:checked){border-color:var(--accent);background:var(--lilac);color:var(--on-lilac)}
+.step h2{font-size:clamp(20px,3.4vw,26px);line-height:1.2}
+.step .no{font-family:var(--f-mono);font-weight:600;letter-spacing:.12em;color:var(--iris-ink)}
+.badge{border-radius:999px;border-color:var(--lilac-deep);background:var(--lilac);color:var(--on-lilac);font-family:var(--f-mono);font-size:11px;letter-spacing:.08em}
+.own h3,.panel h3{font-size:17px}
+.big{font-weight:300;font-size:clamp(40px,8vw,56px);letter-spacing:-.04em}
+.panel{box-shadow:0 4px 0 var(--lilac-deep)}
+.bar,.bar i{border-radius:999px}
+.sub{border-radius:8px}
+
+/* Fortschritt */
+.prog{list-style:none;margin:32px 0 0;padding:0;display:flex;gap:8px}
+.prog li{flex:1 1 0;min-width:0}
+.prog button{width:100%;text-align:left;background:none;border:0;border-top:4px solid var(--line);border-radius:2px;padding:10px 0 0;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.prog .n{font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--muted)}
+.prog .t{font-size:13px;font-weight:600;color:var(--muted);overflow-wrap:anywhere}
+.prog .done button,.prog .cur button{border-top-color:var(--accent)}
+.prog .cur .t,.prog .cur .n{color:var(--ink)}
+.prog button:disabled{cursor:default}
+@media (max-width:640px){.prog .t{display:none}.prog .cur .t{display:block}.prog li.cur{flex:2 1 0}}
+
+/* Schritte, Navigation, Ergebnis */
+main{padding-block:24px 56px}
+.nav{display:flex;flex-direction:column;gap:12px;padding-top:20px;border-top:1px solid var(--line)}
+.navbtns{display:flex;gap:10px;justify-content:space-between}
+.navbtns .btn{flex:1 1 0;max-width:220px}
+.navbtns .btn.primary{margin-left:auto}
+.layout .aside{display:none}
+@media (min-width:960px){.layout .aside{display:block}}
+.layout[data-step="5"]{grid-template-columns:minmax(0,720px)}
+.layout[data-step="5"] .maincol{display:none}
+.layout[data-step="5"] .aside{display:block;position:static}
+.layout:not([data-step="5"]) .aside .actions,.layout:not([data-step="5"]) .aside .status,.layout:not([data-step="5"]) .aside #c-copyout{display:none}
+.layout:not([data-step="5"]) #c-edit{display:none}
+footer{padding-block:0 40px;color:var(--muted);font-size:13px;font-family:var(--f-mono);letter-spacing:.04em}
+
+/* ===== Weiß + Flieder-Netz ===== */
+h1,h2,h3{font-weight:600;letter-spacing:-.025em}
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#FFFFFF 0%,#F7F4FF 100%);color:var(--ink);border:1px solid var(--lilac-deep);box-shadow:0 1px 0 #fff inset,0 18px 40px -24px rgba(108,76,245,.35)}
+.hero-in{position:relative;z-index:1}
+#net{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero h1{font-weight:600;letter-spacing:-.035em;max-width:16ch}
+.hero .lead{color:var(--muted)}
+.hero .over,.hero .meta{color:var(--iris-ink)}
+.hero .meta{color:var(--muted)}
+.facts{border-top:1px solid var(--lilac-deep);color:var(--ink)}
+.over{color:var(--iris-ink)}
+.big{font-weight:600}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{background:linear-gradient(180deg,#121218,#1A1730)}}
+:root[data-theme="dark"] .hero{background:linear-gradient(180deg,#121218,#1A1730)}
+</style>
+
+<header class="wrap herowrap">
+  <div class="hero">
+    <canvas id="net" aria-hidden="true"></canvas>
+    <div class="hero-in">
+    <p class="over"><span class="dot" aria-hidden="true"></span>Digital-Check · Selzer Pflasterbau</p>
+    <h1>Weniger Büro. Mehr Baustelle.</h1>
+    <p class="lead">Kreuzen Sie an, wo bei Ihnen die Zeit verloren geht. Danach sehen Sie sofort, was sich zuerst automatisieren lässt.</p>
+    <div class="hero-actions">
+      <button class="btn primary" id="start" type="button">Check starten</button>
+      <span class="meta">ca. 10 Minuten · 5 Schritte</span>
+    </div>
+    <ul class="facts">
+      <li>Ankreuzen statt tippen</li>
+      <li>Sofort eine Auswertung</li>
+      <li>Nichts passiert ohne Ihre Freigabe</li>
+    </ul>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===== Bedarfs-Check ===== -->
+<section id="view-check">
+  <ol class="prog" id="prog" aria-label="Fortschritt"></ol>
+  <div class="layout" data-step="0">
+    <div class="maincol">
+    <form id="check-form" autocomplete="off" novalidate>
+      <div class="step">
+        <div class="step-h"><span class="no">1 von 5</span><h2>Wo geht die Zeit verloren?</h2><span class="badge" id="example-badge">Beispielwerte, bitte anpassen</span></div>
+        <p class="hint">Haken setzen bei allem, was Zeit frisst. Dann die Stunden pro Woche schätzen und darunter ankreuzen, was dabei genau passiert.</p>
+        <div class="areas" id="areas"></div>
+        <div class="own">
+          <h3>Eigene Tätigkeiten</h3>
+          <p class="hint">Fehlt etwas? Tragen Sie eigene Tätigkeiten mit dem Zeitaufwand ein.</p>
+          <div class="table-rows" id="own-rows"></div>
+          <div class="actions"><button type="button" class="btn small" id="add-own">Tätigkeit hinzufügen</button></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-h"><span class="no">2 von 5</span><h2>Wie groß ist der Betrieb im Alltag?</h2></div>
+        <p class="hint">Grobe Spannen reichen.</p>
+        <div class="fields" id="details"></div>
+      </div>
+
+      <div class="step">
+        <div class="step-h"><span class="no">3 von 5</span><h2>Womit arbeiten Sie heute?</h2></div>
+        <p class="hint">Die Automatisierung soll an diese Systeme andocken und nichts davon ersetzen.</p>
+        <div class="chips" id="systems"></div>
+        <div class="addrow">
+          <label class="f"><span>Weitere Systeme oder Programme</span><input type="text" id="sys-own" placeholder="Name eintragen"></label>
+          <button type="button" class="btn small" id="sys-add">Hinzufügen</button>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-h"><span class="no">4 von 5</span><h2>Was soll archiviert werden, und wozu?</h2></div>
+        <p class="hint">Der Agent soll Unterlagen ablegen, benennen und wiederfinden. Vorher klären wir, was Pflicht ist und wofür das Archiv gebraucht wird.</p>
+        <p class="lbl" style="margin-bottom:8px">Was muss archiviert werden?</p>
+        <div class="chips" id="arch"></div>
+        <div class="addrow">
+          <label class="f"><span>Weitere Unterlagen</span><input type="text" id="arch-own" placeholder="Name eintragen"></label>
+          <button type="button" class="btn small" id="arch-add">Hinzufügen</button>
+        </div>
+        <p class="lbl" style="margin:20px 0 8px">Wozu wird das Archiv gebraucht?</p>
+        <div class="chips" id="ziel"></div>
+        <div class="addrow">
+          <label class="f"><span>Weiteres Ziel</span><input type="text" id="ziel-own" placeholder="Ziel eintragen"></label>
+          <button type="button" class="btn small" id="ziel-add">Hinzufügen</button>
+        </div>
+        <div class="fields" style="margin-top:20px">
+          <label class="f"><span>Wo wird heute abgelegt?</span>
+            <select id="a-ort"><option>Papier in Ordnern</option><option>Festplatte oder Server im Büro</option><option>In DATAflor</option><option>Cloud-Speicher</option><option>Gemischt, ohne feste Ordnung</option></select></label>
+          <label class="f"><span>Wie lange soll aufbewahrt werden?</span>
+            <select id="a-dauer"><option>Gesetzliche Frist (klärt der Steuerberater)</option><option>Bis Ende der Gewährleistung</option><option>Unbefristet</option><option>Weiß ich noch nicht</option></select></label>
+          <label class="f"><span>Wie oft wird etwas gesucht?</span>
+            <select id="a-suche"><option>Mehrmals pro Woche</option><option>Ein paarmal im Monat</option><option>Selten, nur bei Streit oder Prüfung</option></select></label>
+          <label class="f"><span>Wer braucht Zugriff?</span>
+            <select id="a-zugriff"><option>Nur Geschäftsführung</option><option>Büro</option><option>Büro und Bauleiter</option><option>Auch Steuerberater</option></select></label>
+          <label class="f" style="grid-column:1/-1"><span>Weitere Wünsche zur Archivierung</span><textarea id="a-eigen" placeholder="Zum Beispiel: Suche nach Bauvorhaben oder Kunde in Sekunden."></textarea></label>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-h"><span class="no">5 von 5</span><h2>Wer entscheidet mit?</h2></div>
+        <div class="fields">
+          <label class="f"><span>Wer prüft und gibt Vorschläge frei?</span>
+            <select id="c-freigabe"><option>Geschäftsführung</option><option>Büro</option><option>Bauleiter</option><option>Buchhaltung oder Steuerberater</option></select></label>
+          <label class="f"><span>Ihr Name</span><input type="text" id="c-name" autocomplete="name"></label>
+          <label class="f"><span>Telefon oder E-Mail für Rückfragen</span><input type="text" id="c-kontakt"></label>
+          <label class="f" style="grid-column:1/-1"><span>Was nervt am meisten?</span><textarea id="c-anm" placeholder="Zum Beispiel: Freitagabend noch keine Unterkunft für Montag."></textarea></label>
+        </div>
+      </div>
+    </form>
+    <div class="nav">
+      <p class="navgain muted" id="navgain" aria-live="polite"></p>
+      <div class="navbtns">
+        <button class="btn" type="button" id="back">Zurück</button>
+        <button class="btn primary" type="button" id="next">Weiter</button>
+      </div>
+    </div>
+    </div>
+
+    <aside class="aside" aria-live="polite">
+      <div class="panel">
+        <h3>Ihre Auswertung</h3>
+        <p class="muted">Grobe Schätzung. Die Planwerte prüfen wir im Gespräch mit Ihnen.</p>
+        <div id="result"></div>
+        <div class="actions">
+          <button class="btn primary" type="button" id="c-send">Per E-Mail senden</button>
+          <button class="btn" type="button" id="c-copy">Zusammenfassung kopieren</button>
+          <button class="btn" type="button" id="c-edit">Angaben ändern</button>
+        </div>
+        <p class="status" id="c-status" role="status"></p>
+        <div id="c-copyout"></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap"><p>Selzer Pflasterbau · Digital-Check · erstellt mit Clarity Workspace</p></footer>
+
+<script>
+(function(){
+  var $=function(s,r){return (r||document).querySelector(s)};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+  var n=0, nid=function(p){return p+(++n)};
+  var store={
+    get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
+    set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  };
+  var fmt=function(x){return Number(x).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})};
+  var fmt1=function(x){return Number(x).toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:1})};
+
+  /* ---------- Kopieren mit Rückfall ---------- */
+  function copyText(text,outId,statusEl){
+    var out=$(outId); out.innerHTML='';
+    function fallback(){
+      var ta=document.createElement('textarea');
+      ta.className='copybox'; ta.readOnly=true; ta.value=text; ta.id=nid('copy');
+      ta.setAttribute('aria-label','Text zum Kopieren');
+      out.appendChild(ta); ta.focus(); ta.select();
+      say(statusEl,'Text markiert. Bitte mit Strg+C oder „Kopieren“ übernehmen.','');
+    }
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){say(statusEl,'In die Zwischenablage kopiert.','ok')},fallback);
+      } else fallback();
+    }catch(e){fallback()}
+  }
+  function say(el,msg,cls){el.textContent=msg;el.className='status'+(cls?' '+cls:'')}
+
+  /* Hilfsfunktionen für Zeilen */
+  function opts(list,sel){return list.map(function(o){return '<option'+(o===sel?' selected':'')+'>'+esc(o)+'</option>'}).join('')}
+  function rmBtn(){return '<button type="button" class="btn small rm" data-rm aria-label="Zeile entfernen">Entfernen</button>'}
+  function fld(cls,label,inner){var id=nid('rf');return '<label class="f '+cls+'" for="'+id+'"><span>'+label+'</span>'+inner.replace('__ID__',id)+'</label>'}
+  function rowData(row){var o={};$$('[data-f]',row).forEach(function(i){o[i.getAttribute('data-f')]=i.value});return o}
+
+  /* ---------- Datenbank (optional) ---------- */
+  var db=null;
+  (async function(){
+    try{ if(window.claude&&window.claude.use) db=await window.claude.use('db'); }catch(e){db=null}
+  })();
+
+  /* =====================================================
+     BEDARFS-CHECK
+     ===================================================== */
+  var HOURS=[['bis 1 Std.',0.5],['1 bis 3 Std.',2],['3 bis 6 Std.',4.5],['mehr als 6 Std.',8]];
+  var AREAS=[
+    {id:'unterkunft',t:'Monteurunterkünfte',d:'Zimmer für die Folgewoche suchen, anfragen, vergleichen, buchen',w:0.7,on:1,h:3},
+    {id:'mail',t:'E-Mails beantworten',d:'Anfragen, Rückfragen, Standardantworten',w:0.6,on:1,h:2},
+    {id:'buch',t:'Buchhaltung und Rechnungen',d:'Belege erfassen, kontieren, Ausgangsrechnungen schreiben',w:0.5,on:0,h:1},
+    {id:'zahl',t:'Zahlungen und Abschläge',d:'Offene Posten listen, Vorschüsse einfordern, Zahlungserinnerungen',w:0.6,on:1,h:1},
+    {id:'pers',t:'Personal',d:'Stundenzettel, Urlaub, Dokumente und Fristen, Bewerber',w:0.4,on:0,h:1},
+    {id:'kund',t:'Kunden und Angebote',d:'Anfragen beantworten, Angebote, Nachfassen, Bestandskunden',w:0.4,on:0,h:1},
+    {id:'sich',t:'Arbeitssicherheit',d:'Unterweisungen, Prüffristen, Dokumentation',w:0.5,on:0,h:1},
+    {id:'arch',t:'Ablage und Archivierung',d:'Belege und Nachweise sortieren, ablegen, wiederfinden',w:0.6,on:0,h:1},
+    {id:'regie',t:'Leistungsnachweise und Regieberichte',d:'Auf dem Block schreiben, ins Büro bringen, ins System übertragen, archivieren',w:0.7,on:1,h:2}
+  ];
+  var DETAILS=[
+    ['monteure','Monteure pro Woche im Einsatz',['1 bis 5','6 bis 10','11 bis 20','mehr als 20'],1],
+    ['baustellen','Baustellen gleichzeitig',['1 bis 2','3 bis 5','6 bis 10','mehr als 10'],1],
+    ['suche','Wie werden Unterkünfte heute gefunden?',['Über Buchungsportale und telefonisch: alle aufgelisteten Wohnungen werden abtelefoniert','Nur über Buchungsportale','Nur telefonisch und über Bekannte','Über feste Vermieter'],0],
+    ['mails','E-Mails pro Tag',['bis 20','20 bis 50','50 bis 100','über 100'],1],
+    ['rechnungen','Rechnungen pro Monat (ein- und ausgehend)',['bis 20','20 bis 60','60 bis 150','über 150'],1],
+    ['regie','Wie werden Leistungsnachweise heute erfasst?',['Handschriftlich auf dem Block, im Büro ins System übertragen','Papierzettel und Fotos per WhatsApp','Excel','Direkt digital in DATAflor'],0]
+  ];
+  var SYSTEMS=['DATAflor BUSINESS','Outlook','Strato-Mail','DATEV (Steuerberater)','Excel','WhatsApp','Papier und Ordner','Zeiterfassung per Handy'];
+  var SYS_ON=['DATAflor BUSINESS','Outlook','Strato-Mail'];
+
+  var SUBS={
+    unterkunft:['Bedarf aus dem Wochenplan ermitteln','Vermieter und Buchungsportale durchsuchen','Anfragen schreiben oder Wohnungen anrufen','Angebote vergleichen','Buchung bestätigen','Belegung und Kosten dokumentieren','Absagen und Umbuchungen klären'],
+    mail:['Posteingang sortieren','Standardfragen beantworten','Termine abstimmen','Unterlagen anfordern und verschicken','Nachfassen','Beschwerden bearbeiten','Anhänge ablegen'],
+    buch:['Belege sammeln','Belege erfassen und kontieren','Ausgangsrechnungen schreiben','Rechnungen prüfen und freigeben','Kontoauszüge zuordnen','Unterlagen an den Steuerberater übergeben'],
+    zahl:['Offene Posten prüfen','Zahlungseingang kontrollieren','Zahlungserinnerung schreiben','Mahnung schicken','Abschläge und Vorschüsse anfordern','Zahlungen planen'],
+    pers:['Stundenzettel prüfen','Urlaub und Abwesenheit planen','Dokumente und Fristen überwachen','Bewerber beantworten','Einsatzplan erstellen','Lohnunterlagen vorbereiten'],
+    kund:['Anfragen aufnehmen','Besichtigung abstimmen','Angebot erstellen','Angebot nachfassen','Auftragsbestätigung schicken','Bestandskunden ansprechen','Bewertung einholen'],
+    sich:['Unterweisungen planen','Teilnahme dokumentieren','Prüffristen überwachen','Gefährdungsbeurteilung ausfüllen','Unfälle und Beinaheunfälle melden'],
+    arch:['Unterlagen sortieren','Dateien benennen','Ablegen','Dokumente wiederfinden','Aufbewahrungsfristen prüfen','Abgelaufenes aussortieren'],
+    regie:['Nachweis handschriftlich auf dem Block schreiben','Block ins Büro bringen','Angaben ins System übertragen','Nachweis ablegen und archivieren','Rückfragen wegen unleserlicher Angaben','Unterschrift des Auftraggebers auf Papier holen']
+  };
+  function subItem(id,t,chk){var i=nid('sb');return '<label class="sub" for="'+i+'"><input type="checkbox" name="sub-'+id+'" id="'+i+'" value="'+esc(t)+'"'+(chk?' checked':'')+'>'+esc(t)+'</label>'}
+  function subsHtml(a){
+    var L=SUBS[a.id]||[];
+    return '<div class="subs" id="sub-'+a.id+'"'+(a.on?'':' hidden')+'><p class="cap">Was passiert da genau?</p><div id="sl-'+a.id+'">'+
+      L.map(function(t,i){return subItem(a.id,t,a.on&&i<(a.id==='regie'?4:3))}).join('')+'</div>'+
+      '<div class="subadd"><input type="text" id="so-'+a.id+'" placeholder="Eigene Teilaufgabe" aria-label="Eigene Teilaufgabe"><button type="button" class="btn small" data-sadd="'+a.id+'">Hinzufügen</button></div></div>';
+  }
+
+  var areasEl=$('#areas');
+  areasEl.innerHTML=AREAS.map(function(a){
+    return '<div class="area'+(a.on?' on':'')+'" data-id="'+a.id+'">'+
+      '<label class="area-head" for="a-'+a.id+'"><input type="checkbox" id="a-'+a.id+'"'+(a.on?' checked':'')+'>'+
+      '<span><strong>'+esc(a.t)+'</strong><small>'+esc(a.d)+'</small></span></label>'+
+      '<div class="f" id="hw-'+a.id+'"'+(a.on?'':' hidden')+'><label for="h-'+a.id+'"><span class="lbl">Aufwand pro Woche</span></label>'+
+      '<select id="h-'+a.id+'">'+HOURS.map(function(h,i){return '<option value="'+i+'"'+(i===a.h?' selected':'')+'>'+h[0]+'</option>'}).join('')+'</select></div>'+subsHtml(a)+
+    '</div>';
+  }).join('');
+
+  $('#details').innerHTML=DETAILS.map(function(d){
+    return '<label class="f"'+(d[0]==='suche'?' style="grid-column:1/-1"':'')+'><span>'+esc(d[1])+'</span><select id="d-'+d[0]+'">'+
+      d[2].map(function(o,i){return '<option value="'+i+'"'+(i===d[3]?' selected':'')+'>'+esc(o)+'</option>'}).join('')+'</select></label>';
+  }).join('');
+
+  $('#systems').innerHTML=SYSTEMS.map(function(s,i){
+    return '<label class="chip" for="s-'+i+'"><input type="checkbox" name="sys" id="s-'+i+'" value="'+esc(s)+'"'+(SYS_ON.indexOf(s)>-1?' checked':'')+'>'+esc(s)+'</label>';
+  }).join('');
+
+  function addSub(id){
+    var i=$('#so-'+id),v=i.value.trim(); if(!v) return;
+    var ex=$$('input[name=sub-'+id+']').some(function(x){return x.value.toLowerCase()===v.toLowerCase()});
+    if(!ex) $('#sl-'+id).insertAdjacentHTML('beforeend',subItem(id,v,true));
+    i.value=''; i.focus();
+  }
+  areasEl.addEventListener('click',function(e){var b=e.target.closest('[data-sadd]'); if(b) addSub(b.getAttribute('data-sadd'))});
+  areasEl.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&e.target.id&&e.target.id.indexOf('so-')===0){e.preventDefault();addSub(e.target.id.slice(3))}
+  });
+
+  var ARCH=['Leistungsnachweise und Regieberichte','Ausgangsrechnungen','Eingangsrechnungen und Belege','Angebote und Aufträge','Lieferscheine','Verträge','Personalunterlagen','Sicherheitsunterweisungen','Prüfprotokolle für Geräte und Fahrzeuge','Baustellenfotos','E-Mails zu Aufträgen'];
+  var ZIELE=['Gesetzliche Aufbewahrung und Steuer','Nachweis bei Reklamation oder Streit','Abrechnung belegen','Schnell wiederfinden','Nachweis für Versicherung und Berufsgenossenschaft','Papier im Büro loswerden'];
+  function chipsHtml(list,name,pre){
+    return list.map(function(t,i){var id=pre+i;return '<label class="chip" for="'+id+'"><input type="checkbox" name="'+name+'" id="'+id+'" value="'+esc(t)+'"'+(i<2&&name==='arch'?' checked':'')+'>'+esc(t)+'</label>'}).join('');
+  }
+  $('#arch').innerHTML=chipsHtml(ARCH,'arch','ar-');
+  $('#ziel').innerHTML=chipsHtml(ZIELE,'ziel','zl-');
+  function addChip(inputId,boxId,name){
+    var i=$(inputId),v=i.value.trim(); if(!v) return;
+    var ex=$$('input[name='+name+']').some(function(x){return x.value.toLowerCase()===v.toLowerCase()});
+    if(!ex){
+      var id=nid(name),l=document.createElement('label'); l.className='chip'; l.setAttribute('for',id);
+      l.innerHTML='<input type="checkbox" name="'+name+'" id="'+id+'" value="'+esc(v)+'" checked>'+esc(v);
+      $(boxId).appendChild(l);
+    }
+    i.value=''; i.focus();
+  }
+  [['arch','arch'],['ziel','ziel']].forEach(function(x){
+    $('#'+x[0]+'-add').addEventListener('click',function(){addChip('#'+x[0]+'-own','#'+x[1],x[0])});
+    $('#'+x[0]+'-own').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addChip('#'+x[0]+'-own','#'+x[1],x[0])}});
+  });
+
+  function addSys(){
+    var i=$('#sys-own'),v=i.value.trim(); if(!v) return;
+    var ex=$$('input[name=sys]').some(function(x){return x.value.toLowerCase()===v.toLowerCase()});
+    if(!ex){
+      var id=nid('sys'),l=document.createElement('label'); l.className='chip'; l.setAttribute('for',id);
+      l.innerHTML='<input type="checkbox" name="sys" id="'+id+'" value="'+esc(v)+'" checked>'+esc(v);
+      $('#systems').appendChild(l);
+      if(example){example=false;$('#example-badge').hidden=true}
+    }
+    i.value=''; i.focus();
+  }
+  $('#sys-add').addEventListener('click',addSys);
+  $('#sys-own').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addSys()}});
+
+  function addOwn(o){
+    o=o||{name:'',wert:'',einheit:'Std. pro Woche'};
+    var el=document.createElement('div'); el.className='row';
+    el.innerHTML=
+      fld('wide','Tätigkeit','<input type="text" id="__ID__" data-f="name" placeholder="z. B. Lieferscheine abgleichen" value="'+esc(o.name)+'">')+
+      fld('','Zeitaufwand','<input type="number" id="__ID__" data-f="wert" min="0" step="0.5" inputmode="decimal" value="'+esc(o.wert)+'">')+
+      fld('','Einheit','<select id="__ID__" data-f="einheit">'+opts(['Std. pro Woche','Std. pro Monat'],o.einheit)+'</select>')+rmBtn();
+    $('#own-rows').appendChild(el);
+  }
+  $('#add-own').addEventListener('click',function(){addOwn()});
+  $('#own-rows').addEventListener('click',function(e){
+    var b=e.target.closest('[data-rm]'); if(!b) return;
+    var r=b.closest('.row'); r.parentNode.removeChild(r); renderResult();
+  });
+  $('#own-rows').addEventListener('input',function(){
+    if(example){example=false;$('#example-badge').hidden=true}
+    renderResult();
+  });
+  addOwn();
+
+  function calc(){
+    var rows=[],total=0,gain=0;
+    AREAS.forEach(function(a){
+      if(!$('#a-'+a.id).checked) return;
+      var h=HOURS[+$('#h-'+a.id).value][1], g=h*a.w;
+      rows.push({a:a,h:h,g:g}); total+=h; gain+=g;
+    });
+    $$('#own-rows .row').forEach(function(r){
+      var o=rowData(r), v=+o.wert||0; if(!v) return;
+      var h=o.einheit==='Std. pro Monat'?v/4.3:v;
+      rows.push({a:{id:'own',t:o.name||'Eigene Tätigkeit',w:0.5},h:h,g:h*0.5}); total+=h; gain+=h*0.5;
+    });
+    rows.sort(function(x,y){return y.g-x.g});
+    return {rows:rows,total:total,gain:gain};
+  }
+  function renderResult(){
+    var c=calc(), el=$('#result');
+    AREAS.forEach(function(a){
+      var on=$('#a-'+a.id).checked;
+      $('#hw-'+a.id).hidden=!on;
+      $('#sub-'+a.id).hidden=!on;
+      $('.area[data-id="'+a.id+'"]').classList.toggle('on',on);
+    });
+    $('#navgain').textContent=c.rows.length?'Möglicher Zeitgewinn bisher: ca. '+fmt1(c.gain)+' Std. pro Woche':'';
+    if(!c.rows.length){el.innerHTML='<p class="empty">Wählen Sie links mindestens einen Bereich, dann erscheint hier die Auswertung.</p>';return}
+    var max=c.rows[0].g||1;
+    el.innerHTML='<div class="big">'+fmt1(c.gain)+'<small>Std. pro Woche</small></div>'+
+      '<p class="muted">möglicher Zeitgewinn, bei heute etwa '+fmt1(c.total)+' Std. pro Woche Aufwand in den gewählten Bereichen</p>'+
+      '<ul class="rank">'+c.rows.map(function(r){
+        return '<li><span>'+esc(r.a.t)+'</span><span class="v">'+fmt1(r.g)+' Std.</span><span class="bar"><i style="width:'+Math.round(r.g/max*100)+'%"></i></span></li>';
+      }).join('')+'</ul>'+
+      '<p class="start"><strong>Empfohlener Start:</strong> '+esc(c.rows.slice(0,2).map(function(r){return r.a.t}).join(' und '))+'.</p>';
+  }
+  var example=true;
+  $('#check-form').addEventListener('change',function(){
+    if(example){example=false;$('#example-badge').hidden=true}
+    renderResult();
+  });
+  $('#check-form').addEventListener('submit',function(e){e.preventDefault()});
+
+  function collectCheck(){
+    var c=calc(), details={};
+    DETAILS.forEach(function(d){var s=$('#d-'+d[0]);details[d[1]]=s.options[s.selectedIndex].text});
+    var fr=$('#c-freigabe');
+    return {
+      ts:Date.now(),
+      bereiche:c.rows.map(function(r){var f=HOURS.filter(function(h){return h[1]===r.h});return {bereich:r.a.t,eigene:r.a.id==='own',teilaufgaben:(r.a.id!=='own'?$$('input[name=sub-'+r.a.id+']:checked').map(function(i){return i.value}):[]),aufwand:(r.a.id!=='own'&&f.length)?f[0][0]:(fmt1(r.h)+' Std. pro Woche'),stdProWoche:Math.round(r.h*10)/10}}),
+      details:details,
+      systeme:$$('input[name=sys]:checked').map(function(i){return i.value}),
+      archivierung:{
+        was:$$('input[name=arch]:checked').map(function(i){return i.value}),
+        ziele:$$('input[name=ziel]:checked').map(function(i){return i.value}),
+        ablageHeute:$('#a-ort').value, aufbewahrung:$('#a-dauer').value, suchhaeufigkeit:$('#a-suche').value, zugriff:$('#a-zugriff').value,
+        wuensche:$('#a-eigen').value.trim()
+      },
+      freigabe:fr.options[fr.selectedIndex].text,
+      name:$('#c-name').value.trim(),
+      kontakt:$('#c-kontakt').value.trim(),
+      anmerkung:$('#c-anm').value.trim(),
+      geschaetzterGewinnStd:Math.round(c.gain*10)/10,
+      beispielwerte:example
+    };
+  }
+  function summaryText(d){
+    var L=['Digital-Check Selzer Pflasterbau GmbH','',
+      'Absender: '+(d.name||'-')+(d.kontakt?' ('+d.kontakt+')':''),'',
+      'Bereiche mit Aufwand:'];
+    d.bereiche.forEach(function(b){L.push('- '+b.bereich+': '+b.aufwand); if(b.teilaufgaben&&b.teilaufgaben.length) L.push('    Teilaufgaben: '+b.teilaufgaben.join('; '))});
+    L.push('','Geschätzter Zeitgewinn: ca. '+fmt1(d.geschaetzterGewinnStd)+' Std. pro Woche','','Größe:');
+    Object.keys(d.details).forEach(function(k){L.push('- '+k+': '+d.details[k])});
+    L.push('','Systeme: '+(d.systeme.join(', ')||'-'));
+    var A=d.archivierung;
+    L.push('','Archivierung:','- Zu archivieren: '+(A.was.join(', ')||'-'),'- Ziele: '+(A.ziele.join(', ')||'-'),'- Heute abgelegt: '+A.ablageHeute,'- Aufbewahrung: '+A.aufbewahrung,'- Gesucht wird: '+A.suchhaeufigkeit,'- Zugriff: '+A.zugriff);
+    if(A.wuensche) L.push('- Wünsche: '+A.wuensche);
+    L.push('','Freigabe durch: '+d.freigabe);
+    if(d.anmerkung) L.push('','Was nervt am meisten: '+d.anmerkung);
+    if(d.beispielwerte) L.push('','Hinweis: Angaben noch nicht angepasst (Beispielwerte).');
+    return L.join('\n');
+  }
+  $('#c-copy').addEventListener('click',function(){copyText(summaryText(collectCheck()),'#c-copyout',$('#c-status'))});
+  var TO=['c13.selzer','gmail.com'].join('@');
+  $('#c-send').addEventListener('click',function(){
+    var st=$('#c-status'), d=collectCheck();
+    if(!d.bereiche.length){say(st,'Bitte zuerst mindestens einen Bereich auswählen.','err');return}
+    var txt=summaryText(d), subj='Digital-Check Selzer Pflasterbau'+(d.name?' – '+d.name:'');
+    var url='mailto:'+TO+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(txt);
+    if(url.length>1900){
+      copyText(txt,'#c-copyout',st);
+      url='mailto:'+TO+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent('Bitte hier einfügen (Strg+V / Einfügen). Die Zusammenfassung wurde kopiert.');
+    }
+    say(st,'Ihr E-Mail-Programm öffnet sich. Bitte dort noch auf „Senden“ klicken. Falls nichts passiert: „Zusammenfassung kopieren“ nutzen und per E-Mail an '+TO+' schicken.','ok');
+    window.location.href=url;
+  });
+  renderResult();
+
+  /* ---------- Schritt für Schritt ---------- */
+  var STEPS=$$('#check-form .step'), LABELS=['Zeitfresser','Größe','Systeme','Archiv','Freigabe','Ergebnis'], cur=0;
+  function go(n,scroll){
+    cur=Math.max(0,Math.min(5,n));
+    STEPS.forEach(function(st,i){st.hidden=(i!==cur)});
+    $('#view-check .layout').setAttribute('data-step',String(cur));
+    $('#prog').innerHTML=LABELS.map(function(t,i){
+      var cls=i<cur?'done':(i===cur?'cur':'');
+      return '<li class="'+cls+'"><button type="button" data-go="'+i+'"'+(i>cur?' disabled':'')+(i===cur?' aria-current="step"':'')+'><span class="n">0'+(i+1)+'</span><span class="t">'+esc(t)+'</span></button></li>';
+    }).join('');
+    $('#back').hidden=(cur===0);
+    $('#next').textContent=(cur===4?'Auswertung ansehen':'Weiter');
+    $('.nav').hidden=(cur===5);
+    if(scroll){$('#prog').scrollIntoView({behavior:'smooth',block:'start'})}
+  }
+  $('#prog').addEventListener('click',function(e){var b=e.target.closest('[data-go]'); if(b&&!b.disabled) go(+b.getAttribute('data-go'),true)});
+  $('#next').addEventListener('click',function(){go(cur+1,true)});
+  $('#back').addEventListener('click',function(){go(cur-1,true)});
+  $('#c-edit').addEventListener('click',function(){go(4,true)});
+  $('#start').addEventListener('click',function(){go(0,true)});
+  go(0,false);
+
+  /* ---------- Flieder-Netz (animiert) ---------- */
+  (function(){
+    var cv=document.getElementById('net'); if(!cv||!cv.getContext) return;
+    var ctx=cv.getContext('2d'), W=0,H=0,P=[],raf=0,dpr=Math.min(window.devicePixelRatio||1,2);
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function col(){var c=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#6C4CF5';return c}
+    function size(){
+      var r=cv.parentNode.getBoundingClientRect(); W=r.width; H=r.height;
+      cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      var n=Math.max(18,Math.min(54,Math.round(W*H/9000))); P=[];
+      for(var i=0;i<n;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:1.6+Math.random()*2.4});
+    }
+    function draw(){
+      ctx.clearRect(0,0,W,H); var c=col(), L=Math.min(150,W/4);
+      ctx.strokeStyle=c; ctx.fillStyle=c;
+      for(var i=0;i<P.length;i++){var a=P[i];
+        for(var j=i+1;j<P.length;j++){var b=P[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+          if(d<L){ctx.globalAlpha=(1-d/L)*.38;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}}
+      for(i=0;i<P.length;i++){a=P[i];ctx.globalAlpha=.55;ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,6.283);ctx.fill();
+        if(!reduce){a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>W)a.vx*=-1;if(a.y<0||a.y>H)a.vy*=-1}}
+      ctx.globalAlpha=1;
+    }
+    function loop(){draw();raf=requestAnimationFrame(loop)}
+    size(); draw();
+    if(!reduce){loop(); document.addEventListener('visibilitychange',function(){cancelAnimationFrame(raf); if(!document.hidden) loop()})}
+    var t; window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(function(){size();draw()},150)});
+  })();
+})();
+</script>
