@@ -213,6 +213,16 @@ h1,h2,h3{font-weight:600;letter-spacing:-.025em}
 .big{font-weight:600}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{background:linear-gradient(180deg,#121218,#1A1730)}}
 :root[data-theme="dark"] .hero{background:linear-gradient(180deg,#121218,#1A1730)}
+
+@media print{
+  body{background:#fff}
+  .herowrap,.prog,.nav,.maincol,footer,.actions,.status,#c-copyout{display:none!important}
+  .layout{display:block!important}
+  .layout .aside{display:block!important;position:static!important;box-shadow:none}
+  .panel{box-shadow:none;border:1px solid #ccc}
+  #print-head{display:block!important}
+}
+#print-head{display:none;font-family:var(--f-body);margin:0 0 16px}
 </style>
 
 </head>
@@ -325,9 +335,11 @@ h1,h2,h3{font-weight:600;letter-spacing:-.025em}
       <div class="panel">
         <h3>Ihre Auswertung</h3>
         <p class="muted">Grobe Schätzung. Die Planwerte prüfen wir im Gespräch mit Ihnen.</p>
+        <div id="print-head"></div>
         <div id="result"></div>
         <div class="actions">
           <button class="btn primary" type="button" id="c-send">Per E-Mail senden</button>
+          <button class="btn" type="button" id="c-pdf">Als PDF speichern</button>
           <button class="btn" type="button" id="c-copy">Zusammenfassung kopieren</button>
           <button class="btn" type="button" id="c-edit">Angaben ändern</button>
         </div>
@@ -631,6 +643,13 @@ h1,h2,h3{font-weight:600;letter-spacing:-.025em}
   $('#back').addEventListener('click',function(){go(cur-1,true)});
   $('#c-edit').addEventListener('click',function(){go(4,true)});
   $('#start').addEventListener('click',function(){go(0,true)});
+
+  $('#c-pdf').addEventListener('click',function(){
+    var d=collectCheck();
+    if(!d.bereiche.length){say($('#c-status'),'Bitte zuerst mindestens einen Bereich auswählen.','err');return}
+    $('#print-head').innerHTML='<h2 style="margin:0 0 4px">Digital-Check Selzer Pflasterbau</h2><p style="margin:0">'+esc(d.name||'')+' '+esc(d.kontakt||'')+' · '+new Date().toLocaleDateString('de-DE')+'</p><p style="margin:8px 0 0;white-space:pre-wrap">'+esc(summaryText(d))+'</p>';
+    window.print();
+  });
   go(0,false);
 
   /* ---------- Flieder-Netz (animiert) ---------- */
