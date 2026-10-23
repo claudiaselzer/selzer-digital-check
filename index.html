@@ -652,7 +652,10 @@ h1,h2,h3{font-weight:600;letter-spacing:-.025em}
     $('#back').hidden=(cur===0);
     $('#next').textContent=(cur===4?'Auswertung ansehen':'Weiter');
     $('.nav').hidden=(cur===5);
-    if(scroll){$('#prog').scrollIntoView({behavior:'smooth',block:'start'})}
+    if(scroll){
+      var jump=function(){var y=$('#prog').getBoundingClientRect().top+(window.pageYOffset||document.documentElement.scrollTop)-12;window.scrollTo(0,Math.max(0,y))};
+      jump(); requestAnimationFrame(function(){jump(); setTimeout(jump,60)});
+    }
   }
   $('#prog').addEventListener('click',function(e){var b=e.target.closest('[data-go]'); if(b&&!b.disabled) go(+b.getAttribute('data-go'),true)});
   $('#next').addEventListener('click',function(){go(cur+1,true)});
